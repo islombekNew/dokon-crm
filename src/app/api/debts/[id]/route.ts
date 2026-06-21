@@ -3,11 +3,12 @@ import { prisma } from "@/lib/prisma";
 import { requirePermission } from "@/lib/permissions";
 import { successResponse, errorResponse } from "@/lib/api-response";
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { error } = await requirePermission("debts", "view");
   if (error) return error;
+  const { id } = await params;
   const debt = await prisma.debt.findUnique({
-    where: { id: params.id },
+    where: { id },
     include: {
       customer: true,
       sale: { select: { saleNumber: true, totalAmount: true } },

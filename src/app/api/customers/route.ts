@@ -1,4 +1,4 @@
-import { NextRequest } from "next/server";
+﻿import { NextRequest } from "next/server";
 import { requirePermission } from "@/lib/permissions";
 import { customerService } from "@/services/customer.service";
 import { customerSchema } from "@/validators/customer.schema";

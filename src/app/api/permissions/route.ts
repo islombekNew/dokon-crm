@@ -1,4 +1,4 @@
-import { requirePermission } from "@/lib/permissions";
+﻿import { requirePermission } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
 import { successResponse } from "@/lib/api-response";
 

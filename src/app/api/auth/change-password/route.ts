@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+﻿import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAuth } from "@/lib/permissions";
 import { successResponse, errorResponse } from "@/lib/api-response";
@@ -12,7 +12,8 @@ const schema = z.object({
 
 export async function POST(req: NextRequest) {
   const { user, error } = await requireAuth();
-  if (error || !user) return error;
+  if (error) return error;
+  if (!user) return NextResponse.json(errorResponse("Avtorizatsiya talab qilinadi"), { status: 401 });
 
   try {
     const body = await req.json();

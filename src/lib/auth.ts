@@ -61,12 +61,13 @@ export async function getSessionUser(): Promise<JWTPayload | null> {
 }
 
 export function setAuthCookies(res: Response, accessToken: string, refreshToken: string) {
+  const secure = process.env.NODE_ENV === "production" ? "; Secure" : "";
   res.headers.append(
     "Set-Cookie",
-    `access_token=${accessToken}; Path=/; HttpOnly; SameSite=Strict; Max-Age=900`
+    `access_token=${accessToken}; Path=/; HttpOnly; SameSite=Strict; Max-Age=900${secure}`
   );
   res.headers.append(
     "Set-Cookie",
-    `refresh_token=${refreshToken}; Path=/api/auth; HttpOnly; SameSite=Strict; Max-Age=604800`
+    `refresh_token=${refreshToken}; Path=/api/auth; HttpOnly; SameSite=Strict; Max-Age=604800${secure}`
   );
 }

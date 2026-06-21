@@ -1,4 +1,4 @@
-import { NextRequest } from "next/server";
+﻿import { NextRequest } from "next/server";
 import { requirePermission } from "@/lib/permissions";
 import { productService } from "@/services/product.service";
 import { successResponse, errorResponse } from "@/lib/api-response";

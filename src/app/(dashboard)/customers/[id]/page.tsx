@@ -18,9 +18,10 @@ async function getCustomer(id: string) {
   });
 }
 
-export default async function CustomerDetailPage({ params }: { params: { id: string } }) {
+export default async function CustomerDetailPage({ params }: { params: Promise<{ id: string }> }) {
   await requireAuth();
-  const customer = await getCustomer(params.id);
+  const { id } = await params;
+  const customer = await getCustomer(id);
   if (!customer) notFound();
 
   const totalSales = customer.sales.reduce((s, sale) => s + Number(sale.totalAmount), 0);
