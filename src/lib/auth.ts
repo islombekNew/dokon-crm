@@ -1,15 +1,19 @@
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 
-const ACCESS_SECRET = new TextEncoder().encode(
-  process.env.JWT_SECRET || "fallback-secret-change-in-production-32chars"
-);
-const REFRESH_SECRET = new TextEncoder().encode(
-  process.env.JWT_REFRESH_SECRET || "fallback-refresh-secret-change-in-prod-32"
-);
+const jwtSecret = process.env.JWT_SECRET;
+const jwtRefreshSecret = process.env.JWT_REFRESH_SECRET;
+
+if (!jwtSecret || !jwtRefreshSecret) {
+  throw new Error("JWT_SECRET va JWT_REFRESH_SECRET environment variable o'rnatilmagan");
+}
+
+const ACCESS_SECRET = new TextEncoder().encode(jwtSecret);
+const REFRESH_SECRET = new TextEncoder().encode(jwtRefreshSecret);
 
 const ACCESS_TTL = "15m";
 const REFRESH_TTL = "7d";
+const IS_PROD = process.env.NODE_ENV === "production";
 
 export interface JWTPayload {
   userId: string;
@@ -61,13 +65,12 @@ export async function getSessionUser(): Promise<JWTPayload | null> {
 }
 
 export function setAuthCookies(res: Response, accessToken: string, refreshToken: string) {
-  const secure = process.env.NODE_ENV === "production" ? "; Secure" : "";
   res.headers.append(
     "Set-Cookie",
-    `access_token=${accessToken}; Path=/; HttpOnly; SameSite=Strict; Max-Age=900${secure}`
+    `access_token=${accessToken}; Path=/; HttpOnly; SameSite=Strict; Max-Age=900${IS_PROD ? "; Secure" : ""}`
   );
   res.headers.append(
     "Set-Cookie",
-    `refresh_token=${refreshToken}; Path=/api/auth; HttpOnly; SameSite=Strict; Max-Age=604800${secure}`
+    `refresh_token=${refreshToken}; Path=/api/auth; HttpOnly; SameSite=Strict; Max-Age=604800${IS_PROD ? "; Secure" : ""}`
   );
 }

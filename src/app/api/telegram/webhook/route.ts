@@ -1,8 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import crypto from "crypto";
+
+function verifyTelegramSignature(req: NextRequest): boolean {
+  const secret = process.env.TELEGRAM_WEBHOOK_SECRET;
+  if (!secret) return true; // Secret sozlanmagan bo'lsa, tekshirmaslik
+
+  const header = req.headers.get("x-telegram-bot-api-secret-token");
+  if (!header) return false;
+
+  const expected = crypto.createHmac("sha256", "WebAppData").update(secret).digest("hex");
+  return crypto.timingSafeEqual(Buffer.from(header), Buffer.from(expected));
+}
 
 export async function POST(req: NextRequest) {
   try {
+    if (!verifyTelegramSignature(req)) {
+      return NextResponse.json({ ok: false }, { status: 403 });
+    }
+
     const body = await req.json();
     const message = body?.message;
     if (!message) return NextResponse.json({ ok: true });
